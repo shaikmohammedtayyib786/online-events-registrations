@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEC TechFest Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Poppins:wght@300;500;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<style>
+    :root{ 
+        --bg:linear-gradient(135deg,#03071e,#0a1a5c,#123c8c); 
+        --glass:rgba(255,255,255,0.12); 
+        --gold:#ffd700; 
+        --neon:#6ee7ff; 
+        --font-main: 'Poppins', sans-serif;
+        --font-head: 'Orbitron', sans-serif;
+    }
+    
+    /* CUSTOM SCROLLBAR UI */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: var(--neon); border-radius: 10px; box-shadow: inset 0 0 6px rgba(0,0,0,0.3); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+    *{margin:0;padding:0;box-sizing:border-box; transition: all 0.3s ease; font-family: var(--font-main); }
+    body{ background:var(--bg); color:#fff; min-height:100vh; }
+    
+    header h1, #mainTitle, h3, h4 { font-family: var(--font-head); }
+
+    header{ text-align:center; padding:15px 10px 0; }
+    header h1{ font-size:1.6rem; letter-spacing:3px; background:linear-gradient(#ffeaa7, var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    #mainTitle{ 
+        font-size:3.5rem; font-weight: 900; margin-top: -10px; margin-bottom:5px; 
+        text-align:center; background:linear-gradient(#ffffff, var(--neon)); -webkit-background-clip:text; 
+        -webkit-text-fill-color:transparent; text-shadow:0 0 25px rgba(110,231,255,0.6); 
+    }
+    #eventDateDisplay{ text-align:center; font-family: var(--font-head); color:var(--gold); margin-bottom:25px; font-size:1.1rem; letter-spacing:2px; }
+    
+    section{ display:none; min-height:80vh; padding:20px; align-items:center; justify-content:center; flex-direction:column; }
+    section.active{ display:flex; }
+    .card{ background:var(--glass); backdrop-filter:blur(20px); padding:25px; border-radius:24px; width:100%; max-width:850px; border:1px solid rgba(255,255,255,0.2); box-shadow:0 20px 50px rgba(0,0,0,0.5); }
+    
+    input, select{ width:100%; padding:12px; margin-top:10px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.3); color:#fff; outline:none; font-size:0.95rem; }
+    button{ width:100%; padding:14px; margin-top:12px; border:none; border-radius:12px; font-weight:700; cursor:pointer; font-size:1rem; }
+    button:hover{ transform:translateY(-2px); filter: brightness(1.1); }
+    
+    .primary{ background:linear-gradient(90deg,#2563eb, var(--neon)); color:#fff; }
+    .secondary{ background:linear-gradient(90deg,#059669,#10b981); color:#fff; }
+    .gold{ background:linear-gradient(90deg, var(--gold),#ffb703); color:#000; }
+    .danger{ background:#dc2626; color:#fff; }
+    .back{ background:rgba(255,255,255,0.1); color:#fff; }
+    
+    .event-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-top:15px; max-height: 400px; overflow-y: auto; padding-right: 5px; }
+    .table-container { overflow-x:auto; max-height:350px; overflow-y: auto; margin-top: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+    .event{ padding:15px; border-radius:15px; background:rgba(255,255,255,0.05); text-align:center; cursor:pointer; border:2px solid transparent; }
+    .event.selected{ border-color:var(--gold); background:rgba(255,215,0,0.15); }
+    
+    table{ width:100%; border-collapse:collapse; min-width:600px; }
+    th, td{ padding:10px; border-bottom:1px solid rgba(255,255,255,0.1); font-size:0.8rem; text-align:left; }
+    th{ color:var(--gold); text-transform:uppercase; font-size:0.75rem; position: sticky; top: 0; background: #0a1a5c; z-index: 1; }
+    
+    .ticket-container { background: #fff; color: #1a1a1a; padding: 30px; border-radius: 20px; border-left: 10px solid var(--gold); text-align: left; }
+
+    .control-group { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin-top: 10px; border: 1px dashed rgba(255,255,255,0.2); }
+    .flex-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+    
+    .stats-card { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.1); flex: 1; }
+
+    @media(max-width:600px){ #mainTitle{font-size:2.2rem} }
+</style>
+</head>
+<body>
+
+<header><h1>NARAYANA ENGINEERING COLLEGE</h1></header>
+
+<section id="landing" class="active">
+    <div class="card" style="max-width:450px">
+        <h2 id="mainTitle">FEST 2025</h2>
+        <div id="eventDateDisplay">Loading Date...</div>
+        <button class="secondary" onclick="go('facultyLogin')">👨‍🏫 Faculty Access</button>
+        <button class="primary" onclick="go('form')">🎓 Student Registration</button>
+    </div>
+</section>
+
+<section id="facultyLogin">
+    <div class="card" style="max-width:400px">
+        <h3 style="text-align:center">Faculty Authentication</h3>
+        <input id="facSessionName" placeholder="Your Name">
+        <input id="facPass" type="password" placeholder="Access Password">
+        <button class="primary" onclick="facultyLogin()">Verify & Enter</button>
+        <button class="back" onclick="go('landing')">Back</button>
+    </div>
+</section>
+
+<section id="facultyPanel">
+    <div class="card">
+        <h3>Faculty Dashboard</h3>
+        
+        <div class="flex-row" style="margin-bottom: 10px;">
+             <div class="stats-card">
+                 <small>Registrations</small>
+                 <h2 id="regCount" style="color:var(--neon)">0</h2>
+             </div>
+        </div>
+        
+        <div class="control-group">
+            <h4 style="color:var(--neon)">AI Interface Customization</h4>
+            <div class="flex-row">
+                <div style="flex:1">
+                    <label><small>Accent Color</small></label>
+                    <input type="color" id="accentPicker" value="#6ee7ff" oninput="updateTheme('color', this.value)">
+                </div>
+                <div style="flex:1">
+                    <label><small>Font Style</small></label>
+                    <select onchange="updateTheme('font', this.value)" style="margin-top:5px">
+                        <option value="'Poppins', sans-serif">Standard Clean</option>
+                        <option value="'Orbitron', sans-serif">Cyber Futuristic</option>
+                        <option value="'Roboto Mono', monospace">Technical Mono</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:15px; border:1px solid rgba(255,255,255,0.1); padding:15px; border-radius:15px;">
+            <h4>Global Content Settings</h4>
+            <input id="editMain" placeholder="Fest Name">
+            <input id="editDate" placeholder="Event Date">
+            <h4 style="margin-top:10px">Event Titles</h4>
+            <div id="eventEdits" style="margin-top:5px; display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+            <button class="secondary" style="margin-top:15px" onclick="saveEventChanges()">Save All Changes</button>
+        </div>
+
+        <input id="search" placeholder="🔍 Live Filter Roll/Name..." oninput="loadRegs()" style="margin-top:20px">
+        <div class="table-container">
+            <table>
+                <thead><tr><th>Name</th><th>Roll</th><th>Events</th><th>Ref</th><th>Faculty</th><th>Action</th></tr></thead>
+                <tbody id="regTable"></tbody>
+            </table>
+        </div>
+        
+        <div class="flex-row" style="margin-top: 20px;">
+            <button class="gold" style="flex: 1; margin: 0;" onclick="exportCSV()">📥 Export CSV</button>
+            <button class="danger" style="flex: 1; margin: 0;" onclick="deleteAllRegs()">⚠️ Delete All Records</button>
+        </div>
+        
+        <button class="back" onclick="go('landing')">Logout</button>
+    </div>
+</section>
+
+<section id="form">
+    <div class="card" style="max-width:450px">
+        <h3>Student Details</h3>
+        <input id="sname" placeholder="Student Full Name">
+        <input id="sroll" maxlength="10" placeholder="Roll No (Exactly 10 Characters)" oninput="this.value=this.value.toUpperCase()">
+        <select id="sbranch">
+            <option value="">Select Branch</option>
+            <option>CSE</option><option>AI</option><option>AIML</option><option>ECE</option>
+        </select>
+        <select id="syear">
+            <option value="">Select Year</option>
+            <option>2nd Year</option><option>3rd Year</option><option>4th Year</option>
+        </select>
+        <button class="primary" onclick="toEvents()">Next: Select Events</button>
+        <button class="back" onclick="go('landing')">Back</button>
+    </div>
+</section>
+
+<section id="events">
+    <div class="card" style="max-width:550px">
+        <h3>Choose Your Events</h3>
+        <div class="event-grid" id="eventGrid"></div>
+        <div style="margin-top:20px; text-align:right">
+            <h3>Total: <span style="color:var(--gold)">₹<span id="total">0</span></span></h3>
+        </div>
+        <button class="primary" onclick="toPayment()">Proceed to Checkout</button>
+        <button class="back" onclick="go('form')">Back</button>
+    </div>
+</section>
+
+<section id="payment">
+    <div class="card" style="max-width:450px; text-align:center">
+        <h3>Payment Step</h3>
+        <p>Total: ₹<span id="payAmt">0</span></p>
+        <button class="gold" onclick="upiStart()">📱 Open UPI App</button>
+        <div id="upiConfirmationBox" style="display:none; margin-top:15px; padding:15px; border:1px solid var(--neon); border-radius:15px;">
+            <input id="utr" placeholder="Transaction ID">
+            <button class="secondary" onclick="upiConfirm()">Confirm & Send SMS</button>
+        </div>
+        <button class="primary" onclick="cashPay()">💵 Cash Payment</button>
+        <button class="back" onclick="go('events')">Cancel</button>
+    </div>
+</section>
+
+<section id="success">
+    <div class="card" style="text-align:center; max-width:450px">
+        <h2 style="color:#10b981;">Done!</h2>
+        <div id="ticket" class="ticket-container" style="margin: 15px 0;"></div>
+        <button class="secondary" onclick="window.print()">Print Ticket</button>
+        <button class="primary" onclick="location.reload()">Home</button>
+    </div>
+</section>
+
+<script>
+const SMS_NO = "9160479160";
+const UPI_ID = "8309749759@ybl";
+const FAC_PASS = "123456";
+
+let config = JSON.parse(localStorage.getItem("festConfig")) || {
+    mainTitle: "TECHFEST 2025",
+    eventDate: "Jan 1, Wed",
+    events: ["Coding 💻", "Robotics 🤖", "Quiz 🧠", "Sports 🏆", "Gaming 🎮", "Hackathon 🚀"],
+    accent: "#6ee7ff",
+    font: "'Poppins', sans-serif"
+};
+
+let student = {}, selected = [];
+
+function initTheme() {
+    document.documentElement.style.setProperty('--neon', config.accent);
+    document.documentElement.style.setProperty('--font-main', config.font);
+    document.getElementById("mainTitle").innerText = config.mainTitle;
+    document.getElementById("eventDateDisplay").innerText = "EVENT DATE: " + config.eventDate;
+}
+initTheme();
+
+function updateTheme(type, val) {
+    if(type === 'color') {
+        document.documentElement.style.setProperty('--neon', val);
+        config.accent = val;
+    } else if(type === 'font') {
+        document.documentElement.style.setProperty('--font-main', val);
+        config.font = val;
+    }
+    localStorage.setItem("festConfig", JSON.stringify(config));
+}
+
+function go(id){
+    document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    if(id==='events') renderEvents();
+    if(id==='payment') document.getElementById("payAmt").innerText = selected.length * 100;
+    if(id==='facultyPanel') loadRegs();
+}
+
+function facultyLogin(){
+    if(document.getElementById("facPass").value === FAC_PASS){
+        document.getElementById("editMain").value = config.mainTitle;
+        document.getElementById("editDate").value = config.eventDate;
+        loadEventEdits(); go('facultyPanel');
+    } else alert("Wrong Password");
+}
+
+function loadEventEdits(){
+    const container = document.getElementById("eventEdits"); container.innerHTML = "";
+    config.events.forEach((ev, i) => {
+        const inp = document.createElement("input"); inp.value = ev; inp.id = "evInp" + i;
+        container.appendChild(inp);
+    });
+}
+
+function saveEventChanges(){
+    config.mainTitle = document.getElementById("editMain").value;
+    config.eventDate = document.getElementById("editDate").value;
+    config.events.forEach((_, i) => { config.events[i] = document.getElementById("evInp" + i).value; });
+    localStorage.setItem("festConfig", JSON.stringify(config));
+    alert("Saved!"); location.reload();
+}
+
+function toEvents(){
+    const roll = document.getElementById("sroll").value.trim();
+    if(roll.length !== 10) return alert("Roll must be 10 chars");
+    student = { name: document.getElementById("sname").value, roll, branch: document.getElementById("sbranch").value, year: document.getElementById("syear").value };
+    go('events');
+}
+
+function renderEvents(){
+    const grid = document.getElementById("eventGrid"); grid.innerHTML = "";
+    config.events.forEach((e, i) => {
+        const div = document.createElement("div");
+        div.className = "event" + (selected.includes(i) ? " selected" : "");
+        div.innerHTML = `${e}<br><small>₹100</small>`;
+        div.onclick = () => {
+            if(selected.includes(i)) selected = selected.filter(x => x !== i);
+            else if(selected.length < 3) selected.push(i);
+            renderEvents(); document.getElementById("total").innerText = selected.length * 100;
+        };
+        grid.appendChild(div);
+    });
+}
+
+function toPayment(){ if(selected.length > 0) go('payment'); }
+
+function upiStart(){
+    window.location.href = `upi://pay?pa=${UPI_ID}&pn=NEC&am=${selected.length*100}&cu=INR`;
+    document.getElementById("upiConfirmationBox").style.display = "block";
+}
+
+function upiConfirm(){ sendSMS("UPI", document.getElementById("utr").value, () => finish("UPI", document.getElementById("utr").value)); }
+function cashPay(){ sendSMS("CASH", "OFFLINE", () => finish("CASH", "OFFLINE")); }
+
+function sendSMS(m, r, cb) {
+    const eventNames = selected.map(i => config.events[i]).join(", ");
+    const amount = selected.length * 100;
+    const msg = `NEC TECHFEST REG: \nNAME: ${student.name} \nROLL: ${student.roll} \nEVENTS: ${eventNames} \nAMT: ₹${amount} \nPAY: ${m} \nREF: ${r}`;
+    window.location.href = `sms:${SMS_NO}?body=${encodeURIComponent(msg)}`;
+    setTimeout(cb, 2000);
+}
+
+function finish(method, ref){
+    const regData = { ...student, events: selected.map(i => config.events[i]).join(", "), method, reference: ref, faculty: document.getElementById("facSessionName").value || "Self", date: new Date().toLocaleString() };
+    let regs = JSON.parse(localStorage.getItem("regs") || "[]");
+    regs.push(regData);
+    localStorage.setItem("regs", JSON.stringify(regs));
+    document.getElementById("ticket").innerHTML = `<b>Name:</b> ${regData.name}<br><b>Roll:</b> ${regData.roll}<br><b>Events:</b> ${regData.events}`;
+    confetti(); go('success');
+}
+
+function loadRegs(){
+    const regs = JSON.parse(localStorage.getItem("regs") || "[]");
+    const term = document.getElementById("search").value.toLowerCase();
+    const table = document.getElementById("regTable"); table.innerHTML = "";
+    regs.forEach((r, i) => {
+        if(r.roll.toLowerCase().includes(term) || r.name.toLowerCase().includes(term)){
+            table.innerHTML += `<tr><td>${r.name}</td><td>${r.roll}</td><td>${r.events}</td><td>${r.reference}</td><td>${r.faculty}</td><td><button onclick="delReg(${i})" class="delete" style="background:red; color:white; padding:5px; border:none; border-radius:5px; cursor:pointer;">X</button></td></tr>`;
+        }
+    });
+    document.getElementById("regCount").innerText = regs.length;
+}
+
+function delReg(i){
+    if(confirm("Delete this single registration?")) {
+        let regs = JSON.parse(localStorage.getItem("regs")); regs.splice(i, 1);
+        localStorage.setItem("regs", JSON.stringify(regs)); loadRegs();
+    }
+}
+
+/* MASTER DELETE FUNCTION */
+function deleteAllRegs() {
+    if(confirm("⚠️ DANGER: This will delete ALL registrations permanently. Proceed?")) {
+        if(confirm("Final check: Are you absolutely sure? This cannot be undone.")) {
+            localStorage.setItem("regs", "[]");
+            loadRegs();
+            alert("Database Cleared Successfully.");
+        }
+    }
+}
+
+function exportCSV() {
+    const regs = JSON.parse(localStorage.getItem("regs") || "[]");
+    let csv = "Name,Roll,Branch,Year,Events,Method,Ref,Date\n";
+    regs.forEach(r => { csv += `"${r.name}","${r.roll}","${r.branch}","${r.year}","${r.events}","${r.method}","${r.reference}","${r.date}"\n`; });
+    const link = document.createElement("a");
+    link.setAttribute("href", URL.createObjectURL(new Blob(["\ufeff"+csv], {type:"text/csv"})));
+    link.setAttribute("download", "NEC_Fest_Report.csv");
+    link.click();
+}
+</script>
+</body>
+</html>
